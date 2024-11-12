@@ -1,0 +1,73 @@
+heat_template_version: "2021-04-16"
+description: "version 2017-09-01 created by HOT Generator at Mon, 14 Oct 2024 12:58:26 GMT."
+resources: 
+  Net_1: 
+    type: "OS::Neutron::Net"
+    properties: 
+      admin_state_up: true
+      name: template_net
+
+  Subnet_1: 
+    type: "OS::Neutron::Subnet"
+    properties: 
+      name: template_subnet
+      ip_version: 4
+      network: { get_resource: Net_1 }
+      enable_dhcp: true
+      cidr: "192.168.3.0/24"
+    depends_on: 
+      - Net_1
+
+  Router_1: 
+    type: "OS::Neutron::Router"
+    properties: 
+      external_gateway_info: 
+        network: "7b4df2ac-be48-44fc-888e-3706f49b86e3"
+      admin_state_up: true
+      name: template_router
+
+  RouterInterface_1: 
+    type: "OS::Neutron::RouterInterface"
+    properties: 
+      router: { get_resource: Router_1 }
+      subnet: { get_resource: Subnet_1 }
+    depends_on: 
+      - Router_1
+      - Subnet_1
+
+  SecurityGroup_1: 
+    type: "OS::Neutron::SecurityGroup"
+    properties: 
+      rules: 
+        - direction: egress
+          ethertype: IPv4
+          remote_mode: remote_ip_prefix
+          remote_ip_prefix: "0.0.0.0/0"
+        - direction: egress
+          ethertype: IPv6
+          remote_mode: remote_ip_prefix
+          remote_ip_prefix: "::/0"
+        - direction: ingress
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+          remote_mode: remote_ip_prefix
+          remote_ip_prefix: "0.0.0.0/0"
+      name: template_resource_group
+      description: "create using template"
+
+  Server_3: 
+    type: "OS::Nova::Server"
+    properties: 
+      security_groups: 
+        - { get_resource: SecurityGroup_1 }
+      networks: 
+        - network: { get_resource: Net_1 }
+      name: template_server
+      flavor: "gx3.1c4r"
+      image: "596c6bfc-dbe4-418d-964a-da71bccdc6a5"
+      availability_zone: nova
+      key_name: openstack_key
+    depends_on: 
+      - SecurityGroup_1
+      - Net_1
