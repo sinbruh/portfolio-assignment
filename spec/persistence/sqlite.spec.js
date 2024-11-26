@@ -8,7 +8,9 @@ const ITEM = {
     completed: false,
 };
 
-beforeEach(() => {
+beforeEach(async () => {
+    await db.teardown();
+
     if (fs.existsSync(location)) {
         fs.unlinkSync(location);
     }

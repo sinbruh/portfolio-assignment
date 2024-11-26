@@ -30,11 +30,17 @@ function init() {
 
 async function teardown() {
     return new Promise((acc, rej) => {
-        db.close(err => {
-            if (err) rej(err);
-            else acc();
-        });
-    });
+        if (db) {
+            db.close(err => {
+                if (err) rej(err);
+                else acc();
+            });
+        }
+        else {
+            acc();
+        }
+    }
+ );
 }
 
 async function getItems() {
@@ -91,7 +97,7 @@ async function updateItem(id, item) {
             },
         );
     });
-} 
+}
 
 async function removeItem(id) {
     return new Promise((acc, rej) => {
