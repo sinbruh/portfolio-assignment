@@ -91,7 +91,7 @@ jobs:
       # Build the Docker image
       - name: 'Build and push Docker container'
         run: |-
-          DOCKER_TAG="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}"
+          DOCKER_TAG="${GAR_LOCATION}-docker.pkg.dev/${{ env.GCLOUD_PROJECT }}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}"
 
           docker build \
             --tag "${DOCKER_TAG}" \
