@@ -1,5 +1,6 @@
 name: 'Build and Deploy to GKE'
 
+#Trigger workflow when Tests are run
 on:
     workflow_run:
       workflows:
@@ -8,17 +9,18 @@ on:
         - completed
 
 env:
-    GCLOUD_PROJECT: ${{ secrets.PROJECT_ID }} # TODO: update to your Google Cloud project ID
-    GAR_LOCATION: ${{ secrets.GAR_LOCATION }} # TODO: update to your region
-    GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }} # TODO: update to your cluster name
-    GKE_ZONE: ${{ secrets.GKE_ZONE }} # TODO: update to your cluster zone
-    DEPLOYMENT_NAME: ${{ secrets.DEPLOYMENT_NAME }} # TODO: update to your deployment name
-    REPOSITORY: ${{ secrets.REPOSITORY }} # TODO: update to your Artifact Registry docker repository name
+    GCLOUD_PROJECT: ${{ secrets.PROJECT_ID }}
+    GAR_LOCATION: ${{ secrets.GAR_LOCATION }}
+    GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+    GKE_ZONE: ${{ secrets.GKE_ZONE }}
+    DEPLOYMENT_NAME: ${{ secrets.DEPLOYMENT_NAME }}
+    REPOSITORY: ${{ secrets.REPOSITORY }}
     IMAGE: ${{ secrets.IMAGE }}
-    WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_SECRET }} # TODO: update to your workload identity provider
+    WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_SECRET }}
 
 jobs:
     setup-build-publish-deploy:
+      # Make sure tests are successful before we deploy
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         name: 'Setup, Build, Publish, and Deploy'
         runs-on: 'ubuntu-latest'
@@ -33,9 +35,6 @@ jobs:
               uses: 'actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332' # actions/checkout@v4
 
             # Configure Workload Identity Federation and generate an access token.
-            #
-            # See https://github.com/google-github-actions/auth for more options,
-            # including authenticating via a JSON credentials file.
             - id: 'auth'
               name: 'Authenticate to Google Cloud'
               uses: 'google-github-actions/auth@f112390a2df9932162083945e46d439060d66ec2' # google-github-actions/auth@v2
