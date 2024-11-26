@@ -32,4 +32,6 @@ jobs:
 
       # Run tests
       - name: Run tests
+        env:
+            SQLITE_DB_LOCATION: ./test-data
         run: yarn test
