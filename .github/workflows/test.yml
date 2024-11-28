@@ -2,36 +2,38 @@ name: Run Tests
 
 # Trigger workflow on push or pull request to specific branches
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    push:
+        paths-ignore:
+            - 'README.md'
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
 
 # Define the jobs to be run
 jobs:
-  test:
-    name: Run Yarn Tests
-    runs-on: ubuntu-latest
+    test:
+        name: Run Yarn Tests
+        runs-on: ubuntu-latest
 
-    steps:
-      # Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v3
+        steps:
+            # Checkout the repository
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-      # Set up Node.js environment
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18 
+            # Set up Node.js environment
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
 
-      # Install dependencies using yarn
-      - name: Install dependencies
-        run: yarn install
+            # Install dependencies using yarn
+            - name: Install dependencies
+              run: yarn install
 
-      # Run tests
-      - name: Run tests
-        env:
-            SQLITE_DB_LOCATION: ./test-data
-        run: yarn test
+            # Run tests
+            - name: Run tests
+              env:
+                  SQLITE_DB_LOCATION: ./test-data
+              run: yarn test
